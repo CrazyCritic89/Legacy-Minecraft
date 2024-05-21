@@ -7,7 +7,7 @@ public interface LegacyOptions {
 
     OptionInstance<Double> hudDistance();
     OptionInstance<Double> hudOpacity();
-    OptionInstance<Double> interfaceResolution();
+    OptionInstance<Integer> interfaceResolution();
     OptionInstance<Double> interfaceSensitivity();
     OptionInstance<Boolean> overrideTerrainFogStart();
     OptionInstance<Integer> terrainFogStart();
@@ -37,4 +37,8 @@ public interface LegacyOptions {
     OptionInstance<Integer> selectedController();
     OptionInstance<Difficulty> createWorldDifficulty();
     OptionInstance<Boolean> smoothAnimatedCharacter();
+    OptionInstance<Double> leftDeadzone();
+    OptionInstance<Double> rightDeadzone();
+    OptionInstance<Boolean> leftSmooth();
+    OptionInstance<Boolean> rightSmooth();
 }

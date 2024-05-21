@@ -41,6 +41,10 @@ public class ControllerMappingScreen extends PanelVListScreen implements Control
         }))).size(240,20).build());
         renderableVList.addRenderable(ScreenUtil.getLegacyOptions().selectedController().createButton(options,0,0,240));
         renderableVList.addRenderable(ScreenUtil.getLegacyOptions().invertControllerButtons().createButton(options,0,0,240));
+        renderableVList.addRenderable(ScreenUtil.getLegacyOptions().leftDeadzone().createButton(options,0,0,240));
+        renderableVList.addRenderable(ScreenUtil.getLegacyOptions().leftSmooth().createButton(options,0,0,240));
+        renderableVList.addRenderable(ScreenUtil.getLegacyOptions().rightDeadzone().createButton(options,0,0,240));
+        renderableVList.addRenderable(ScreenUtil.getLegacyOptions().rightSmooth().createButton(options,0,0,240));
         for (KeyMapping keyMapping : keyMappings) {
             String category = keyMapping.getCategory();
             if (!Objects.equals(lastCategory, category)) {

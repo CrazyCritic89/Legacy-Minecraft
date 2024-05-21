@@ -116,10 +116,22 @@ public abstract class BindingState {
             return Math.max(Math.abs(y),Math.abs(x));
         }
         public float getSmoothX(){
-            return   (x > getDeadZone() ? x - getDeadZone() : x < -getDeadZone() ? x + getDeadZone() : 0)  / (1 - getDeadZone());
+            return  (x > getDeadZone() ? x - getDeadZone() : x < -getDeadZone() ? x + getDeadZone() : 0)  / (1 - getDeadZone());
+            //return (Math.hypot(x,y) > getDeadZone() ? x - getDeadZone() * Math.signum(x) : 0) / (1 - getDeadZone());
+            //return (Math.hypot(x,y) > getDeadZone() ? x : 0);
+            //return  (Math.abs(x) > getDeadZone() ? x : 0);
         }
         public float getSmoothY(){
             return  (y > getDeadZone() ? y - getDeadZone() : y < -getDeadZone() ? y + getDeadZone() : 0)  / (1 - getDeadZone());
+            //return (Math.hypot(x,y) > getDeadZone() ? y - getDeadZone() * Math.signum(y) : 0) / (1 - getDeadZone());
+            //return (Math.hypot(x,y) > getDeadZone() ? x : 0);
+            //return  (Math.abs(y) > getDeadZone() ? y : 0);
+        }
+        public float getRawX(){
+            return  (Math.abs(x) > getDeadZone() ? x : 0);
+        }
+        public float getRawY(){
+            return  (Math.abs(y) > getDeadZone() ? y : 0);
         }
         protected Axis(ControllerBinding component) {
             super(component);

@@ -21,8 +21,8 @@ public enum ControllerBinding {
     BACK(icon('\uE73E','\uE009'), InputConstants.KEY_H),
     GUIDE(icon('\uE745')),
     START(icon('\uE73D','\uE008'), InputConstants.KEY_ESCAPE),
-    LEFT_STICK(c-> BindingState.Axis.createStick(c,()->0.25f,(a, s)->{}),icon('\uE746','\uE748','\uE747'),false),
-    RIGHT_STICK(c-> BindingState.Axis.createStick(c,()->0.2f,ControllerBinding::updatePlayerCamera),icon('\uE749','\uE74E','\uE74F'),false),
+    LEFT_STICK(c-> BindingState.Axis.createStick(c,()->(ScreenUtil.getLegacyOptions().leftDeadzone().get().floatValue()),(a, s)->{}),icon('\uE746','\uE748','\uE747'),false),
+    RIGHT_STICK(c-> BindingState.Axis.createStick(c,()->(ScreenUtil.getLegacyOptions().rightDeadzone().get().floatValue()),ControllerBinding::updatePlayerCamera),icon('\uE749','\uE74E','\uE74F'),false),
     LEFT_STICK_BUTTON(icon('\uE743','\u000F'), InputConstants.KEY_F5),
     RIGHT_STICK_BUTTON(icon('\uE744','\u0010'), InputConstants.KEY_LSHIFT),
     LEFT_BUMPER(icon('\uE739','\uE74A'), InputConstants.KEY_PAGEDOWN),
@@ -33,14 +33,14 @@ public enum ControllerBinding {
     DPAD_DOWN(icon('\uE73F','\uE00C'), InputConstants.KEY_DOWN),
     DPAD_LEFT(icon('\uE741','\uE00E'), InputConstants.KEY_LEFT),
     DPAD_RIGHT(icon('\uE740','\uE00D'), InputConstants.KEY_RIGHT),
-    LEFT_STICK_UP(c-> BindingState.create(c, h-> LEFT_STICK.bindingState instanceof BindingState.Axis a && a.y < -0.5),icon('\uE746','\uE748','\uE747'),InputConstants.KEY_W),
-    LEFT_STICK_DOWN(c-> BindingState.create(c, h-> LEFT_STICK.bindingState instanceof BindingState.Axis a && a.y > 0.5),icon('\uE746','\uE748','\uE747'),InputConstants.KEY_S),
-    LEFT_STICK_RIGHT(c-> BindingState.create(c, h-> LEFT_STICK.bindingState instanceof BindingState.Axis a && a.x > 0.5),icon('\uE746','\uE748','\uE747'),InputConstants.KEY_D),
-    LEFT_STICK_LEFT(c-> BindingState.create(c, h-> LEFT_STICK.bindingState instanceof BindingState.Axis a && a.x < -0.5),icon('\uE746','\uE748','\uE747'),InputConstants.KEY_A),
-    RIGHT_STICK_UP(c-> BindingState.create(c, h-> RIGHT_STICK.bindingState instanceof BindingState.Axis a && a.y < -0.5),icon('\uE749','\uE74E','\uE74F')),
-    RIGHT_STICK_DOWN(c-> BindingState.create(c, h-> RIGHT_STICK.bindingState instanceof BindingState.Axis a && a.y > 0.5),icon('\uE749','\uE74E','\uE74F')),
-    RIGHT_STICK_RIGHT(c-> BindingState.create(c, h-> RIGHT_STICK.bindingState instanceof BindingState.Axis a && a.x > 0.5),icon('\uE749','\uE74E','\uE74F')),
-    RIGHT_STICK_LEFT(c-> BindingState.create(c, h-> RIGHT_STICK.bindingState instanceof BindingState.Axis a && a.x < -0.5),icon('\uE749','\uE74E','\uE74F'));
+    LEFT_STICK_UP(c-> BindingState.create(c, h-> LEFT_STICK.bindingState instanceof BindingState.Axis a && a.y < -a.getDeadZone() ),icon('\uE746','\uE748','\uE747'),InputConstants.KEY_W),
+    LEFT_STICK_DOWN(c-> BindingState.create(c, h-> LEFT_STICK.bindingState instanceof BindingState.Axis a && a.y > a.getDeadZone() ),icon('\uE746','\uE748','\uE747'),InputConstants.KEY_S),
+    LEFT_STICK_RIGHT(c-> BindingState.create(c, h-> LEFT_STICK.bindingState instanceof BindingState.Axis a && a.x > a.getDeadZone() ),icon('\uE746','\uE748','\uE747'),InputConstants.KEY_D),
+    LEFT_STICK_LEFT(c-> BindingState.create(c, h-> LEFT_STICK.bindingState instanceof BindingState.Axis a && a.x < -a.getDeadZone() ),icon('\uE746','\uE748','\uE747'),InputConstants.KEY_A),
+    RIGHT_STICK_UP(c-> BindingState.create(c, h-> RIGHT_STICK.bindingState instanceof BindingState.Axis a && a.y < -a.getDeadZone()),icon('\uE749','\uE74E','\uE74F')),
+    RIGHT_STICK_DOWN(c-> BindingState.create(c, h-> RIGHT_STICK.bindingState instanceof BindingState.Axis a && a.y > a.getDeadZone()),icon('\uE749','\uE74E','\uE74F')),
+    RIGHT_STICK_RIGHT(c-> BindingState.create(c, h-> RIGHT_STICK.bindingState instanceof BindingState.Axis a && a.x > a.getDeadZone()),icon('\uE749','\uE74E','\uE74F')),
+    RIGHT_STICK_LEFT(c-> BindingState.create(c, h-> RIGHT_STICK.bindingState instanceof BindingState.Axis a && a.x < -a.getDeadZone()),icon('\uE749','\uE74E','\uE74F'));
 
 
     public final Component displayName = Component.translatable(Legacy4J.MOD_ID + ".controller_component." + name().toLowerCase(Locale.ENGLISH));
@@ -73,7 +73,7 @@ public enum ControllerBinding {
         Minecraft minecraft = Minecraft.getInstance();
         if (!minecraft.mouseHandler.isMouseGrabbed() || !minecraft.isWindowActive() || !stick.pressed || minecraft.player == null) return;
         double f = Math.pow(minecraft.options.sensitivity().get() * (double)0.6f + (double)0.2f,3) * 14 * (minecraft.player.isScoping() ? 0.125: 1.0);
-        minecraft.player.turn(stick.getSmoothX() * f,stick.getSmoothY() * f * (ScreenUtil.getLegacyOptions().invertYController().get() ? -1 : 1));
+        minecraft.player.turn((ScreenUtil.getLegacyOptions().rightSmooth().get() ? stick.getSmoothX() : stick.getRawX()) * f,(ScreenUtil.getLegacyOptions().rightSmooth().get() ? stick.getSmoothY() : stick.getRawY()) * f * (ScreenUtil.getLegacyOptions().invertYController().get() ? -1 : 1));
     }
     public static void init() {
     }

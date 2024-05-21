@@ -55,7 +55,7 @@ public abstract class OptionsMixin implements LegacyOptions {
 
     private OptionInstance<Double> hudDistance;
     private OptionInstance<Double> hudOpacity;
-    private OptionInstance<Double> interfaceResolution;
+    private OptionInstance<Integer> interfaceResolution;
     private OptionInstance<Double> interfaceSensitivity;
     private OptionInstance<Integer> terrainFogStart;
     private OptionInstance<Double> terrainFogEnd;
@@ -85,6 +85,10 @@ public abstract class OptionsMixin implements LegacyOptions {
     private OptionInstance<Integer> controllerIcons;
     private OptionInstance<Difficulty> createWorldDifficulty;
     private OptionInstance<Boolean> smoothAnimatedCharacter;
+    private OptionInstance<Double> leftDeadzone;
+    private OptionInstance<Double> rightDeadzone;
+    private OptionInstance<Boolean> leftSmooth;
+    private OptionInstance<Boolean> rightSmooth;
 
     @ModifyArg(method = "<init>", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/KeyMapping;<init>(Ljava/lang/String;ILjava/lang/String;)V", ordinal = 5),index = 0)
     protected String initKeyCraftingName(String string) {
@@ -130,7 +134,7 @@ public abstract class OptionsMixin implements LegacyOptions {
         hudScale = new OptionInstance<>("legacy.options.hudScale", OptionInstance.noTooltip(), OptionsMixin::genericValueLabel,  new OptionInstance.IntRange(1,3), 2, d -> {});
         hudOpacity = new OptionInstance<>("legacy.options.hudOpacity", OptionInstance.noTooltip(), OptionsMixin::percentValueLabel, OptionInstance.UnitDouble.INSTANCE, 0.8, d -> {});
         hudDistance = new OptionInstance<>("legacy.options.hudDistance", OptionInstance.noTooltip(), OptionsMixin::percentValueLabel, OptionInstance.UnitDouble.INSTANCE, 1.0, d -> {});
-        interfaceResolution = new OptionInstance<>("legacy.options.interfaceResolution", OptionInstance.noTooltip(), (c, d) -> percentValueLabel(c, 0.25 + d * 1.5), OptionInstance.UnitDouble.INSTANCE, 0.5, d -> minecraft.resizeDisplay());
+        interfaceResolution = new OptionInstance<>("legacy.options.interfaceResolution", OptionInstance.noTooltip(), OptionsMixin::genericValueLabel, new OptionInstance.IntRange(0,4), 2, d -> minecraft.resizeDisplay());
         interfaceSensitivity = new OptionInstance<>("legacy.options.interfaceSensitivity", OptionInstance.noTooltip(), (c, d) -> percentValueLabel(c, d*2), OptionInstance.UnitDouble.INSTANCE, 0.5, d -> {});
         overrideTerrainFogStart = OptionInstance.createBoolean("legacy.options.overrideTerrainFogStart", true);
         terrainFogStart = new OptionInstance<>("legacy.options.terrainFogStart", OptionInstance.noTooltip(),(c,i)-> Component.translatable("options.chunks", i), new OptionInstance.ClampingLazyMaxIntRange(2, () -> renderDistance().get(), 0x7FFFFFFE), 4, d -> {});
@@ -138,6 +142,10 @@ public abstract class OptionsMixin implements LegacyOptions {
         controllerIcons = new OptionInstance<>("legacy.options.controllerIcons", OptionInstance.noTooltip(), (c, i)-> Component.translatable("options.generic_value",c,i == 0? Component.translatable("legacy.options.auto_value", ControlTooltip.getActiveControllerType().displayName) : ControlTooltip.Type.values()[i].displayName),  new OptionInstance.IntRange(0, ControlTooltip.Type.values().length - 1), 0, d -> {});
         createWorldDifficulty = new OptionInstance<>("options.difficulty", d->Tooltip.create(d.getInfo()), (c, d) -> d.getDisplayName(), new OptionInstance.Enum<>(Arrays.asList(Difficulty.values()), Codec.INT.xmap(Difficulty::byId, Difficulty::getId)), Difficulty.NORMAL, d -> {});
         smoothAnimatedCharacter = OptionInstance.createBoolean("legacy.options.smoothAnimatedCharacter",false);
+        leftDeadzone = new OptionInstance<>("legacy.options.leftDeadzone", OptionInstance.noTooltip(), OptionsMixin::percentValueLabel, OptionInstance.UnitDouble.INSTANCE, 0.25, d -> {});
+        rightDeadzone = new OptionInstance<>("legacy.options.rightDeadzone", OptionInstance.noTooltip(), OptionsMixin::percentValueLabel, OptionInstance.UnitDouble.INSTANCE, 0.2, d -> {});
+        leftSmooth = OptionInstance.createBoolean("legacy.options.leftSmooth", false);
+        rightSmooth = OptionInstance.createBoolean("legacy.options.rightSmooth", true);
         if(Legacy4JClient.canLoadVanillaOptions)
             load();
     }
@@ -175,6 +183,10 @@ public abstract class OptionsMixin implements LegacyOptions {
         fieldAccess.process("vanillaTabs", vanillaTabs);
         fieldAccess.process("legacyGamma", legacyGamma);
         fieldAccess.process("smoothAnimatedCharacter", smoothAnimatedCharacter);
+        fieldAccess.process("leftDeadzone", leftDeadzone);
+        fieldAccess.process("rightDeadzone", rightDeadzone);
+        fieldAccess.process("leftSmooth", leftSmooth);
+        fieldAccess.process("rightSmooth", rightSmooth);
         hideGui = !displayHUD.get();
         for (KeyMapping keyMapping : keyMappings) {
             LegacyKeyMapping mapping = (LegacyKeyMapping) keyMapping;
@@ -186,7 +198,7 @@ public abstract class OptionsMixin implements LegacyOptions {
 
     public OptionInstance<Double> hudDistance() {return hudDistance;}
     public OptionInstance<Double> hudOpacity() {return hudOpacity;}
-    public OptionInstance<Double> interfaceResolution() {return interfaceResolution;}
+    public OptionInstance<Integer> interfaceResolution() {return interfaceResolution;}
     public OptionInstance<Double> interfaceSensitivity() {
         return interfaceSensitivity;
     }
@@ -265,5 +277,17 @@ public abstract class OptionsMixin implements LegacyOptions {
     }
     public OptionInstance<Boolean> smoothAnimatedCharacter() {
         return smoothAnimatedCharacter;
+    }
+    public OptionInstance<Double> leftDeadzone() {
+        return leftDeadzone;
+    }
+    public OptionInstance<Double> rightDeadzone() {
+        return rightDeadzone;
+    }
+    public OptionInstance<Boolean> leftSmooth() {
+        return leftSmooth;
+    }
+    public OptionInstance<Boolean> rightSmooth() {
+        return rightSmooth;
     }
 }

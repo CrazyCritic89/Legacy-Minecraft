@@ -75,7 +75,7 @@ public abstract class MinecraftMixin {
     }
     @ModifyArg(method = "resizeDisplay",at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/platform/Window;setGuiScale(D)V"))
     public double resizeDisplay(double d) {
-        return (getWindow().getHeight() / 360d) * (1.125 - ScreenUtil.getLegacyOptions().interfaceResolution().get() / 4) * getTweakedHeightScale(getWindow().getHeight());
+        return (ScreenUtil.getLegacyOptions().interfaceResolution().get()+2) / 2.0;
     }
     @Unique
     public double getTweakedHeightScale(int height) {
